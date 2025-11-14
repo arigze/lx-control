@@ -42,9 +42,16 @@ class PIDController():
         # as well as self_prev_int_heading to track the integral term
         # self.prev_e_heading the previous error. But note that you
         # should be the one to update them also.
+        e_current = theta_ref - theta_curr
+
+        e_int = self.prev_int_heading + e_current * delta_t
+        e_der = (self.prev_e_heading - e_current) / delta_t
+
+        self.prev_int_heading = e_int
+        self.prev_e_heading = e_current
 
         v = v_ref
-        omega = np.random.uniform(-8.0, 8.0)
+        omega = (self.kp * e_current) + (self.ki * e_int) + (self.kd * e_der)
         return v, omega
 
     def OffsetControl(self,
