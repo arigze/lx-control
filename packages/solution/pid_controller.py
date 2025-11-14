@@ -79,9 +79,16 @@ class PIDController():
         # as well as self_prev_int_offset to track the integral term
         # self.prev_e_offset the previous error. But note that you
         # should be the one to update them also.
+        e_current = y_ref - y_curr
 
-        omega = np.random.uniform(-8.0, 8.0)
+        e_int = self.prev_int_offset + e_current * delta_t
+        e_der = (self.prev_e_offset - e_current) / delta_t
+
+        self.prev_int_offset = e_int
+        self.prev_e_offset = e_current
+
         v = v_ref
+        omega = (self.kp * e_current) + (self.ki * e_int) + (self.kd * e_der)
         return v, omega
 
     def SetGains(self, kp: float, ki: float, kd: float) -> None:
